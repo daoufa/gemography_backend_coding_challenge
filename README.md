@@ -1,11 +1,15 @@
 # gemography_backend_coding_challenge
 REST microservice that list the languages used by the 100 trending public repos on GitHub.
+
 Functional specs
+
 Develop a REST microservice that list the languages used by the 100 trending public repos on GitHub.
 For every language, you need to calculate the attributes below 👇:
 Number of repos using this language
 The list of repos using the language
+
 How to get Trending Repos from Github
+
 Fetching trending repositories simply translates to fetching the most starred repos created in the last 30 days ( from now ). To do that, you'll need to call the following endpoint:
 
 https://api.github.com/search/repositories?q=created:>{date}&sort=stars&order=desc
