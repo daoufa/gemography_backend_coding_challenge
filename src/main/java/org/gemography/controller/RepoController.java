@@ -1,4 +1,4 @@
-package org.gemography_backend_coding_challenge.controller;
+package org.gemography.controller;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -11,9 +11,11 @@ import java.util.Scanner;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.gemography.services.SortingService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RepoController {
+	@Autowired
+	private SortingService sortingService;
 
 	@RequestMapping("/repos/{date}")
-	public Map getItem(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-mm-dd") Date date) throws Exception {
+	public Map<String, Integer> getItem(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-mm-dd") Date date)
+			throws Exception {
 
 		// get date from url and format it as yyyy-mm-dd
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
@@ -56,7 +61,7 @@ public class RepoController {
 
 		// create map that map each language with the number of times used in the total
 		// 100 repo
-		Map<String, Integer> languageCounter = new HashMap();
+		Map<String, Integer> languageCounter = new HashMap<String, Integer>();
 
 		for (int i = 0; i < itemObj.size(); i++) {
 			JSONObject repo = (JSONObject) itemObj.get(i);
@@ -76,23 +81,13 @@ public class RepoController {
 			}
 		}
 
-		// get the most popular language
-		int max = 0;
-		String mostPopularLanguage = "";
-		for (Map.Entry<String, Integer> m : languageCounter.entrySet()) {
-			if (max < (int) m.getValue()) {
-				max = (int) m.getValue();
-				mostPopularLanguage = (String) m.getKey();
-			}
-		}
+		languageCounter = sortingService.sortByValue(languageCounter);
 
 		return languageCounter;
 	}
 
 	@RequestMapping("/repos")
-	void handleFoo(HttpServletResponse response) throws IOException {
-//		DateTimeFormatter simpleDateFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-		System.out.println(java.time.LocalDate.now());
+	void redirection(HttpServletResponse response) throws IOException {
 		response.sendRedirect("/repos/" + java.time.LocalDate.now());
 	}
 
