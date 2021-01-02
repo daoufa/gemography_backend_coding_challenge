@@ -1,5 +1,6 @@
 package org.GI3.controller;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -7,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,13 +24,16 @@ public class RepoController {
 
 	@RequestMapping("/repos/{date}")
 	public Map getItem(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-mm-dd") Date date) throws Exception {
+
+		// get date from url and format it as yyyy-mm-dd
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
 		if (date == null) {
 			date = new Date();
 		}
+
+		// create connection and save the data as String
 		URL url = new URL("https://api.github.com/search/repositories?q=created:%3E" + simpleDateFormat.format(date)
 				+ "&sort=stars&order=desc");
-		System.out.println();
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.connect();
@@ -41,13 +47,17 @@ public class RepoController {
 
 		scanner.close();
 
+		// parse data from String to JSONObject to get items object wich contains
+		// language used in the repo
 		JSONParser par = new JSONParser();
 		JSONObject dataObj = (JSONObject) par.parse(str);
 
 		JSONArray itemObj = (JSONArray) dataObj.get("items");
 
+		// create map that map each language with the number of times used in the total
+		// 100 repo
 		Map<String, Integer> languageCounter = new HashMap();
-		System.out.println(itemObj.size());
+
 		for (int i = 0; i < itemObj.size(); i++) {
 			JSONObject repo = (JSONObject) itemObj.get(i);
 			String language = "";
@@ -66,6 +76,7 @@ public class RepoController {
 			}
 		}
 
+		// get the most popular language
 		int max = 0;
 		String mostPopularLanguage = "";
 		for (Map.Entry<String, Integer> m : languageCounter.entrySet()) {
@@ -77,4 +88,12 @@ public class RepoController {
 
 		return languageCounter;
 	}
+
+	@RequestMapping("/repos")
+	void handleFoo(HttpServletResponse response) throws IOException {
+//		DateTimeFormatter simpleDateFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		System.out.println(java.time.LocalDate.now());
+		response.sendRedirect("/repos/" + java.time.LocalDate.now());
+	}
+
 }
