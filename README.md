@@ -1,5 +1,5 @@
 # My code for the gemography_backend_coding_challenge :blush:
-REST microservice that list the languages used by the 100 trending public repos on GitHub.
+Create REST microservice that list the languages used by the 100 trending public repos on GitHub.
 
 # Functional specs
 
