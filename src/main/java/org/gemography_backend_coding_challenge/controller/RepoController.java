@@ -1,4 +1,4 @@
-package org.GI3.controller;
+package org.gemography_backend_coding_challenge.controller;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -33,7 +33,7 @@ public class RepoController {
 
 		// create connection and save the data as String
 		URL url = new URL("https://api.github.com/search/repositories?q=created:%3E" + simpleDateFormat.format(date)
-				+ "&sort=stars&order=desc");
+				+ "&sort=stars&order=desc&per_page=100");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.connect();
